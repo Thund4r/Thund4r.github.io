@@ -1,5 +1,5 @@
 ---
-layout: home
+layout: splash
 author_profile: true
 header:
   overlay_color: "#5e616c"
