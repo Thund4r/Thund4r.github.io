@@ -4,4 +4,4 @@ title: "Test Homepage"
 permalink: /home/
 ---
 Homepage
-$\mX$
+$$\mX$$
