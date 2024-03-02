@@ -5,5 +5,5 @@ permalink: /home/
 ---
 
 Homepage
-$$\mX$$
-$$ \nabla_\boldsymbol{x} J(\boldsymbol{x}) $$
+<embed src="_images\Chong.pdf" type="application/pdf" width="100%" height="600px">
+
