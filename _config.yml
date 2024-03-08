@@ -107,7 +107,7 @@ author:
   name             : "Chong Zhe Khang"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "Test Bio"
-  location         : "Department of Computer Science, The University of Manchester"
+  location         : "Department of Computer Science / The University of Manchester"
   email            :
   links:
     - label: "Email"
