@@ -5,7 +5,9 @@ permalink: /ch1/
 classes: wide
 ---
 
-<embed src="/assets/images/Chong.pdf" type="application/pdf" width="100%" height="600px">
+To explain the setup of transformers, we will focus on an example of training such an architecture to do a translation between English and French sentences. 
+This example is adapted from the book d2l.ai. 
+
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
@@ -23,3 +25,5 @@ In this section, we will be going through the architecture of the transformer se
 ## The Training Data
 
 To explain how a transformer works, I will be using an English to French translation task as an example. We will go through the transformer architecture step by step and observe how the data is handled throughout. Below is an example of data that is used for training the transformer. The transformer should aim to be able to predict the correct French translation given an English sequence of inputs.
+
+<embed src="/assets/images/Chong.pdf" type="application/pdf" width="100%" height="600px">
