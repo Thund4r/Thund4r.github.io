@@ -91,7 +91,7 @@ The result of this function applied to some query key and value matrix would be 
 
 Lets say for an $$N \times D$$ matrix, $$\mathbf{Q}\mathbf{K}^\top$$ would be a $$N \times N$$ matrix. Assuming $$N$$ to be the total length of the data (number of words in the data), the $$N \times N$$ matrix can be read as such: The first row in the $$N \times N$$ matrix would be the "relationship" between the first word in the $$\mathbf{Q}$$ matrix and all the other words in the $$\mathbf{K}$$ matrix (First column in the first row would be "relationship" between first word in Q and first word in K, second column in the first row would be the first word in Q and second word in K).
 
-![Example of softmax over test matrix](/path/to/DotProdExample.png)
+![Example of softmax over test matrix](/assets/images/DotProdExample.png)
 *Example of softmax over test matrix*
 
 Note that the softmax function sums over rows or the feature dimension of each word vector. 
@@ -100,7 +100,7 @@ Note that the softmax function sums over rows or the feature dimension of each w
 
 The Multi-Headed Attention layer performs Scaled Dot Product Attention multiple times instead of just once, allowing for the transformer to attend to different parts of the word vector representations with each heads. It takes in a query, key and value matrix of size $$N\times D$$, performs a linear transformation between the matrices and some trainable weights then splits them into $$h$$ (head) matrices of size $$N\times \frac{D}{H}$$. Below shows an example of this split.
 
-![Example of data being split into $$H = 4$$ heads](/path/to/multiheadsplit.png)
+![Example of data being split into $$H = 4$$ heads](/assets/images/multiheadsplit.png)
 *Example of data being split into $$H = 4$$ heads*
 
 The output of head $$h_i$$ can be given as:
@@ -167,62 +167,53 @@ Referring back to the figure and algorithm for the encoder, we can see that the 
 The encoder takes in the English index representations of the words $$\mathbf{X}^{(\text{enc})}$$ and passes it through the embedding layer and then through the positional encoding layer to obtain the $$N \times D$$ dimensional matrix. Then, the resulting matrix is passed into the encoder block(s) and the output of that is passed into the decoder.
 
 The multi-headed attention takes in three matrices, and in the encoder, the three query, key, value matrices are just $$\mathbf{X}^{(\text{enc})}$$; it is only after these matrices are multiplied by the trainable parameters $$\mathbf{W}$$ do they differ.
-
 $$
-Y_i, X_i = \mathbb{R}^N
-$$
-
-Hyperparameters:
-$$
-N, D, B, H \in \mathbb{N}
-$$
-$$
-\mathbf{M}, \tilde{\mathbf{M}} \in \mathbb{N}^{N\times D}
-$$
-
-Embedding and Positional Encoding:
-$$
-\begin{align*}
-&\text{Embed}_{Fr}(Y_i) + \mathbf{P} \\
-&\text{Embed}_{En}(X_i) + \mathbf{P}
-\end{align*}
+\begin{gather}
+\begin{split}
+Y_i, X_i = \mathbb{R}^N\\
+\text{Hyperparameters}:
+\begin{split}
+N, D, B, H \in \mathbb{N}\\
+M, \tilde{M} \in \mathbb{N}^{N\times D}
+\end{split}
+\end{split}\\
+\begin{split}
+&\text{Embed}_{Fr}(Y_i) + P \\
+&\text{Embed}_{En}(X_i) + P 
+\end{split}
 \in \mathbb{R}^{N \times D},
-$$
-$$
-\mathbf{P}_{i,2j} = \sin\left(\frac{i}{10000^{2j/D}}\right)\\
-\mathbf{P}_{i,2j+1} = \cos\left(\frac{i}{10000^{(2j+1)/D}}\right)
-\in \mathbb{R}^{N \times D}
-$$
-
-Query, Key, Value Computation:
-$$
-\mathbf{Q}_i = (\text{Embed}_{En}(X_i) + \mathbf{P})\mathbf{W}^{(q)}\\
-\mathbf{K}_i = (\text{Embed}_{En}(X_i) + \mathbf{P})\mathbf{W}^{(k)}\\
-\mathbf{V}_i = (\text{Embed}_{En}(X_i) + \mathbf{P})\mathbf{W}^{(v)}
-\in \mathbb{R}^{N \times D}\quad \mathbf{W}^{(q)}, \mathbf{W}^{(k)}, \mathbf{W}^{(v)} \in \mathbb{R}^{D \times D}
-$$
-
-Multi-Head Splitting and Attention:
-$$
-\mathbf{Q}_i = \{[\mathbf{Q}_{i1}],[\mathbf{Q}_{i2}],\ldots,[\mathbf{Q}_{iH}]\}, \mathbf{Q}_{iH} \in \mathbb {R}^{N \times D/H}
-$$
-Similarly for $$\mathbf{K}_i$$ and $$\mathbf{V}_i$$.
-
-Attention Masking and Softmax:
-$$
-\mathbf{M}_{ij} = \begin{cases} 1 & \text{if valid\_lens}_i \ge j,\\
-0 & \text{otherwise} \end{cases} \in \mathbb{R}^{N\times N}
-$$
-
-Layer Normalization and Feed-Forward Network:
-$$
-\text{LayerNorm}(\mathbf{X}_{ij}) = \left[\frac{\mathbf{X}_{ij}-\hat{\mu}_i}{\hat{\sigma}_i}\right]
-$$
-
-Final Encoder Output:
-$$
-\text{Encoder}(X_i) = \text{LayerNorm}(\mathbf{Z}_i + \mathcal{N}(\mathbf{Z}_i)) \in \mathbb{R}^{N\times D}
-$$
+\begin{split}
+P_{i,2j} &= \sin(\frac{i}{10000^{2j/D}})\\
+P_{i,2j+1} &= \cos(\frac{i}{10000^{(2j+1)/D}})
+\end{split}
+\in \mathbb{R}^{N \times D}\\
+\begin{split}
+Q_i = (\text{Embed}_{En}(X_i) + P)W^{(q)}\\
+K_i = (\text{Embed}_{En}(X_i) + P)W^{(k)}\\
+V_i = (\text{Embed}_{En}(X_i) + P)W^{(v)}
+\end{split}
+\in \mathbb{R}^{N \times D}\quad W^{(q)}, W^{(k)}, W^{(v)} \in \mathbb{R}^{D \times D}\\
+\begin{split}
+Q_i = \{[Q_{i1}],[Q_{i2}],\ldots,[Q_{iH}]\}, Q_{iH} \in \mathbb {R}^{N \times D/H}\\
+\text{similarly} \{[K_{i1}],[K_{i2}],\ldots,[K_{iH}]\}, \{[V_{i1}],[V_{i2}],\ldots,[V_{iH}]\}
+\end{split}\\
+\begin{split}
+\mM_{ij} &= \begin{cases} 1 & \text{if } \text{valid\_lens}_i \ge j,\\
+0 & \text{otherwise} \end{cases} \in \mathbb{R}^{N\times N}\\
+\mS_i &= \{[(\mQ_{i1}\mK_{i1})\mM^{\top}],[(\mQ_{i2}\mK_{i2})\mM^{\top}],\ldots,[(\mQ_{iH}\mK_{iH})\mM^{\top}]\}, (\mQ_{iH}\mK_{iH})\mM^{\top} \in \mathbb {R}^{N\times N}
+\end{split}\\
+\mO_i = \{[\text{\rm softmax}(\frac{\mS_{i1}}{\sqrt{D}})\mV_{i1}],[\text{\rm softmax}(\frac{\mS_{i2}}{\sqrt{D}})\mV_{i2}],\ldots,[\text{\rm softmax}(\frac{\mS_{iH}}{\sqrt{D}})\mV_{iH}]\}\mW^{(o)} \in \mathbb{R}^{N\times D}, \mW^{(o)}\in \mathbb{R}^{D\times D}\\
+\begin{split}
+\text{\rm LayerNorm}(\mX_{ij}) &= [\frac{\mX_{ij}-\hat{\mu}_i}{\hat{\sigma}_i}]\\
+\hat{\mu}_i &= \frac{1}{D}\sum_{j=1}^{D}\tilde \mX_{ij}\\
+\hat{\sigma}_i &= \sqrt{\frac{1}{D}\sum_{j=1}^{D}(\tilde \mX_{ij} - \hat{\mu}_i)^2 + \epsilon}\\
+\mZ_i &= \text{\rm LayerNorm}(\mO_i + \text{Embed}_{En}(X_i) + \mP) \in \mathbb{R}^{N\times D}
+\end{split}\\
+\begin{split}
+\gN(\mX) &= \max(0, \mX\mW_1)\mW_2 \in \mathbb{R}^{N\times D}, \mX\in \mathbb{R}^{N\times D}, \mW_1\in \mathbb{R}^{D\times B}, \mW_2\in \mathbb{R}^{B\times D}\\
+\text{\rm Encoder}(X_i) &= \text{\rm LayerNorm}(\mZ_i + \gN(\mZ_i)) \in \mathbb{R}^{N\times D}
+\end{split}
+\end{gather}$$
 
 ## Decoder
 
