@@ -73,4 +73,47 @@ The reason this formula is used can be attributed to multiple reasons. Think abo
 
 The formula we use for positional encoding overcomes these two issues, as the values of $$\mathbf{P}$$ stay between $$-1$$ and $$1$$, and the relationship between words of offset $$\phi$$ can be calculated using a linear transformation. Each word in different positions is also represented by a unique $$\sin$$ or $$\cos$$ function.
 
+## Scaled Dot Product Attention
+
+The main attention function we will be using is dot product attention, or more specifically, scaled dot product attention. It takes in three matrices $$\mathbf{Q}, \mathbf{K}, \mathbf{V} \in \mathbb{R}^{N \times D}$$ and outputs a singular matrix of size $$N\times D$$. $$\mathbf{Q}, \mathbf{K}$$ and $$\mathbf{V}$$ is different depending on where in the transformer it is called, so we will not be going into detail on what they are for now.
+
+$$
+\text{softmax}(\tilde{\mathbf{X}}) = \left[ \ldots, \frac{e^{\tilde{\mathbf{X}}_{ij}}}{\sum_{j=1}^{D} e^{\tilde{\mathbf{X}}_{ij}}}, \ldots\right]
+$$
+
+$$
+\text{ScaledDotProductAttention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{(\mathbf{Q} \mathbf{K}^\top)}{\sqrt{D}}\right) \mathbf{V} \in \mathbb{R}^{N \times D}
+$$
+
+The scaled dot product attention function is used to measure the similarity between the query and key matrix, and higher weighting is given to values with high similarity scores.
+
+The result of this function applied to some query key and value matrix would be the matrix containing a weighted sum of word vectors. In other words, the output matrix would be a re-weighted matrix, with the weights calculated using query and key, before multiplying the weights with the value matrix. 
+
+Lets say for an $$N \times D$$ matrix, $$\mathbf{Q}\mathbf{K}^\top$$ would be a $$N \times N$$ matrix. Assuming $$N$$ to be the total length of the data (number of words in the data), the $$N \times N$$ matrix can be read as such: The first row in the $$N \times N$$ matrix would be the "relationship" between the first word in the $$\mathbf{Q}$$ matrix and all the other words in the $$\mathbf{K}$$ matrix (First column in the first row would be "relationship" between first word in Q and first word in K, second column in the first row would be the first word in Q and second word in K).
+
+![Example of softmax over test matrix](/path/to/DotProdExample.png)
+*Example of softmax over test matrix*
+
+Note that the softmax function sums over rows or the feature dimension of each word vector. 
+
+## Multi-Headed Attention
+
+The Multi-Headed Attention layer performs Scaled Dot Product Attention multiple times instead of just once, allowing for the transformer to attend to different parts of the word vector representations with each heads. It takes in a query, key and value matrix of size $$N\times D$$, performs a linear transformation between the matrices and some trainable weights then splits them into $$h$$ (head) matrices of size $$N\times \frac{D}{H}$$. Below shows an example of this split.
+
+![Example of data being split into $$H = 4$$ heads](/path/to/multiheadsplit.png)
+*Example of data being split into $$H = 4$$ heads*
+
+The output of head $$h_i$$ can be given as:
+
+$$
+h_i = \text{ScaledDotProductAttention}(\mathbf{Q}_i\mathbf{W}_i^{(q)}, \mathbf{K}_i\mathbf{W}_i^{(k)}, \mathbf{V}_i\mathbf{W}_i^{(v)}) \in \mathbb{R}^{N \times \frac{D}{H}}
+$$
+
+$$
+h_i = \text{softmax}\left(\frac{((\mathbf{Q}_i\mathbf{W}_i^{(q)}) (\mathbf{K}_i\mathbf{W}_i^{(k)})^\top)}{\sqrt{D}}\right) (\mathbf{V}_i\mathbf{W}_i^{(v)}) \in \mathbb{R}^{N \times \frac{D}{H}}
+$$
+
+The outputs of each head are then concatenated into one matrix, and another linear transformation $$\mathbf{W}_o$$ is applied before returning the
+
+
 <embed src="/assets/images/Chong.pdf" type="application/pdf" width="100%" height="600px">
