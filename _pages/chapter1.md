@@ -2,7 +2,6 @@
 layout: single
 title: "Chapter 1"
 permalink: /ch1/
-classes: wide
 ---
 
 To explain the setup of transformers, we will focus on an example of training such an architecture to do a translation between English and French sentences. 
