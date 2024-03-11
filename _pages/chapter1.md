@@ -8,9 +8,6 @@ classes: wide
 To explain the setup of transformers, we will focus on an example of training such an architecture to do a translation between English and French sentences. 
 This example is adapted from the book d2l.ai. 
 
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 # How the Transformer Works
 
 In this section, we will be going through the architecture of the transformer section by section and showing how it works using a translation task as an example.
@@ -29,7 +26,7 @@ To explain how a transformer works, I will be using an English to French transla
 ![Data example](/assets/images/data.png)
 *Data example*
 
-A single training data would be a pair of $\(X_i^{(enc)}\)$ and $\(X_i^{(dec)}\)$.
+A single training data would be a pair of $$\(X_i^{(enc)}\)$ and $\(X_i^{(dec)}\)$$.
 
 ![A pair of preprocessed words](/assets/images/singledata.png)
 *A pair of preprocessed words*
