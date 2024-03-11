@@ -4,6 +4,10 @@ main:
     url: https://thund4r.github.io/
   - title: "Chapter 1"
     url: /ch1/
+  - title: "Chapter 2"
+    url: /ch2/
+  - title: "Chapter 3"
+    url: /ch3/
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
