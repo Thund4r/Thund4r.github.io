@@ -26,12 +26,12 @@ To explain how a transformer works, I will be using an English to French transla
 ![Data example](/assets/images/data.png)
 *Data example*
 
-A single training data would be a pair of $$(X_i^{(enc)})$$ and $$(X_i^{(dec)})$$.
+A single training data would be a pair of $$X_i^{(enc)}$$ and $$X_i^{(dec)}$$.
 
 ![A pair of preprocessed words](/assets/images/singledata.png)
 *A pair of preprocessed words*
 
-Before being passed into the transformer, the training data is padded or truncated with a padding token up to size $$(N)$$, which is determined before training. A separate list called $$`valid_lens` (\in \mathbb{N}^{N})$$ is also generated during this process which tells us the length of the English words before being padded ('hi', '.', '<eos>') would be 3 in `valid_lens`).
+Before being passed into the transformer, the training data is padded or truncated with a padding token up to size $$N$$, which is determined before training. A separate list called $$\text{valid_lens} \in \mathbb{N}^{N}$$ is also generated during this process which tells us the length of the English words before being padded ('hi', '.', '$$\text{<eos>}$$') would be 3 in $$\text{valid_lens}$$.
 
 ![Preprocessed words after padding](/assets/images/singledatapadded.png)
 *Preprocessed words after padding*
