@@ -36,7 +36,7 @@ Before being passed into the transformer, the training data is padded or truncat
 ![Preprocessed words after padding](/assets/images/singledatapadded.png)
 *Preprocessed words after padding*
 
-The words are then replaced with the dictionary index corresponding to the word. e.g., 'go' would be replaced by 71, and '.' by 2. Note: The two languages do not share the same dictionary, so the index number 3 may correspond to '<eos>' in the English dict whilst in the French dict it is '<bos>'.
+The words are then replaced with the dictionary index corresponding to the word. e.g., 'go' would be replaced by 71, and '.' by 2. Note: The two languages do not share the same dictionary, so the index number 3 may correspond to '$$\text{<eos>}$$' in the English dict whilst in the French dict it is '$$\text{<bos>}$$'.
 
 ![Preprocessed words after being replaced by index](/assets/images/singledataindex.png)
 *Preprocessed words after being replaced by index*
@@ -53,5 +53,13 @@ The Embedding layer stores a look-up table of words used within the vocabulary, 
 *Example lookup table*
 
 The lookup table is a trainable parameter that is updated throughout the training process.
+
+$$
+\begin{align*}
+\mathbf{P}_{i,2j} &= \sin\left(\frac{i}{10000^{2j/D}}\right), \\
+\mathbf{P}_{i,2j+1} &= \cos\left(\frac{i}{10000^{(2j+1)/D}}\right).
+\end{align*}
+$$
+
 
 <embed src="/assets/images/Chong.pdf" type="application/pdf" width="100%" height="600px">
