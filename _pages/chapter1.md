@@ -54,6 +54,12 @@ The Embedding layer stores a look-up table of words used within the vocabulary, 
 
 The lookup table is a trainable parameter that is updated throughout the training process.
 
+## Positional Encoding
+
+After the embedding layer, our words will be represented using the matrix $$\mathbf{X} \in \mathbb{R}^{N\times D}$$, where $$D$$ is the dimensions of the word vector (This value is determined before the training process) and $$N$$ is the maximum data length. $$N$$ is determined during data preprocessing, and shorter sequences are padded while longer sequences are truncated.
+
+As the word vectors themselves do not have their positions represented within the vector, we will need the positional encoding layer to add that component. This layer performs $$\mathbf{X} + \mathbf{P}$$, with $$\mathbf{X}$$ being the matrix containing the word vectors and $$\mathbf{P}$$ being a matrix constructed with the below conditions.
+
 $$
 \begin{align*}
 \mathbf{P}_{i,2j} &= \sin\left(\frac{i}{10000^{2j/D}}\right), \\
@@ -61,5 +67,10 @@ $$
 \end{align*}
 $$
 
+For every even $$j$$ position, its value is given by $$\sin\left(\frac{i}{10000^{2j/D}}\right)$$ and for odd $$j$$ positions, $$\cos\left(\frac{i}{10000^{2j/D}}\right)$$. The output of this layer will be a matrix of the same size, but with a positional value added to its matrix representation. Note: $$D$$ is the dimension of any word vector.
+
+The reason this formula is used can be attributed to multiple reasons. Think about it, if you were to use a positional encoding of just $$i$$, why would that not work ($$i$$ is the position of word $$i$$ in the sentence)? Although each position is unique, for larger numbers, the positional encoding would dominate the values of the original encoding (For position $$i = 10$$, the result of $$\mathbf{X} + \mathbf{P}$$ could be $$10.14$$). What about $$i/N$$? Although the positional vector would only go up to 1, for sentences of different lengths, the positional vector would be different, as $$N$$ would change. So for sentences of different lengths, the word $$i + \phi$$ where $$\phi$$ is some offset, this number would be different, and make it hard for the transformer to "learn" this relationship (for example, nouns followed by verbs).
+
+The formula we use for positional encoding overcomes these two issues, as the values of $$\mathbf{P}$$ stay between $$-1$$ and $$1$$, and the relationship between words of offset $$\phi$$ can be calculated using a linear transformation. Each word in different positions is also represented by a unique $$\sin$$ or $$\cos$$ function.
 
 <embed src="/assets/images/Chong.pdf" type="application/pdf" width="100%" height="600px">
