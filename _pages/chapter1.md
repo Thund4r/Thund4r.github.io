@@ -198,20 +198,20 @@ Q_i = \{[Q_{i1}],[Q_{i2}],\ldots,[Q_{iH}]\}, Q_{iH} \in \mathbb {R}^{N \times D/
 \text{similarly} \{[K_{i1}],[K_{i2}],\ldots,[K_{iH}]\}, \{[V_{i1}],[V_{i2}],\ldots,[V_{iH}]\}
 \end{split}\\
 \begin{split}
-\mM_{ij} &= \begin{cases} 1 & \text{if } \text{valid\_lens}_i \ge j,\\
+M_{ij} &= \begin{cases} 1 & \text{if } \text{valid\_lens}_i \ge j,\\
 0 & \text{otherwise} \end{cases} \in \mathbb{R}^{N\times N}\\
-\mS_i &= \{[(\mQ_{i1}\mK_{i1})\mM^{\top}],[(\mQ_{i2}\mK_{i2})\mM^{\top}],\ldots,[(\mQ_{iH}\mK_{iH})\mM^{\top}]\}, (\mQ_{iH}\mK_{iH})\mM^{\top} \in \mathbb {R}^{N\times N}
+S_i &= \{[(Q_{i1}K_{i1})M^{\top}],[(Q_{i2}K_{i2})M^{\top}],\ldots,[(Q_{iH}K_{iH})M^{\top}]\}, (Q_{iH}K_{iH})M^{\top} \in \mathbb {R}^{N\times N}
 \end{split}\\
-\mO_i = \{[\text{\rm softmax}(\frac{\mS_{i1}}{\sqrt{D}})\mV_{i1}],[\text{\rm softmax}(\frac{\mS_{i2}}{\sqrt{D}})\mV_{i2}],\ldots,[\text{\rm softmax}(\frac{\mS_{iH}}{\sqrt{D}})\mV_{iH}]\}\mW^{(o)} \in \mathbb{R}^{N\times D}, \mW^{(o)}\in \mathbb{R}^{D\times D}\\
+O_i = \{[\text{\rm softmax}(\frac{S_{i1}}{\sqrt{D}})V_{i1}],[\text{\rm softmax}(\frac{S_{i2}}{\sqrt{D}})V_{i2}],\ldots,[\text{\rm softmax}(\frac{S_{iH}}{\sqrt{D}})V_{iH}]\}W^{(o)} \in \mathbb{R}^{N\times D}, W^{(o)}\in \mathbb{R}^{D\times D}\\
 \begin{split}
-\text{\rm LayerNorm}(\mX_{ij}) &= [\frac{\mX_{ij}-\hat{\mu}_i}{\hat{\sigma}_i}]\\
-\hat{\mu}_i &= \frac{1}{D}\sum_{j=1}^{D}\tilde \mX_{ij}\\
-\hat{\sigma}_i &= \sqrt{\frac{1}{D}\sum_{j=1}^{D}(\tilde \mX_{ij} - \hat{\mu}_i)^2 + \epsilon}\\
-\mZ_i &= \text{\rm LayerNorm}(\mO_i + \text{Embed}_{En}(X_i) + \mP) \in \mathbb{R}^{N\times D}
+\text{\rm LayerNorm}(X_{ij}) &= [\frac{X_{ij}-\hat{\mu}_i}{\hat{\sigma}_i}]\\
+\hat{\mu}_i &= \frac{1}{D}\sum_{j=1}^{D}\tilde X_{ij}\\
+\hat{\sigma}_i &= \sqrt{\frac{1}{D}\sum_{j=1}^{D}(\tilde X_{ij} - \hat{\mu}_i)^2 + \epsilon}\\
+Z_i &= \text{\rm LayerNorm}(O_i + \text{Embed}_{En}(X_i) + P) \in \mathbb{R}^{N\times D}
 \end{split}\\
 \begin{split}
-\gN(\mX) &= \max(0, \mX\mW_1)\mW_2 \in \mathbb{R}^{N\times D}, \mX\in \mathbb{R}^{N\times D}, \mW_1\in \mathbb{R}^{D\times B}, \mW_2\in \mathbb{R}^{B\times D}\\
-\text{\rm Encoder}(X_i) &= \text{\rm LayerNorm}(\mZ_i + \gN(\mZ_i)) \in \mathbb{R}^{N\times D}
+\gN(X) &= \max(0, XW_1)W_2 \in \mathbb{R}^{N\times D}, X\in \mathbb{R}^{N\times D}, W_1\in \mathbb{R}^{D\times B}, W_2\in \mathbb{R}^{B\times D}\\
+\text{\rm Encoder}(X_i) &= \text{\rm LayerNorm}(Z_i + \gN(Z_i)) \in \mathbb{R}^{N\times D}
 \end{split}
 \end{gather}$$
 
