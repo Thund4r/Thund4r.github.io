@@ -29,7 +29,7 @@ To explain how a transformer works, I will be using an English to French transla
 ![Data example](/assets/images/data.png)
 *Data example*
 
-A single training data would be a pair of \(X_i^{(enc)}\) and \(X_i^{(dec)}\).
+A single training data would be a pair of $\(X_i^{(enc)}\)$ and $\(X_i^{(dec)}\)$.
 
 ![A pair of preprocessed words](/assets/images/singledata.png)
 *A pair of preprocessed words*
