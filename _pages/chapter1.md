@@ -113,7 +113,130 @@ $$
 h_i = \text{softmax}\left(\frac{((\mathbf{Q}_i\mathbf{W}_i^{(q)}) (\mathbf{K}_i\mathbf{W}_i^{(k)})^\top)}{\sqrt{D}}\right) (\mathbf{V}_i\mathbf{W}_i^{(v)}) \in \mathbb{R}^{N \times \frac{D}{H}}
 $$
 
-The outputs of each head are then concatenated into one matrix, and another linear transformation $$\mathbf{W}_o$$ is applied before returning the
+The outputs of each head are then concatenated into one matrix, and another linear transformation $$\mathbf{W}_o$$ is applied before returning the final matrix.
+
+$$
+\begin{bmatrix}
+h_1 \\
+\vdots \\
+h_H
+\end{bmatrix}\mathbf{W}_o  \in \mathbb{R}^{N \times D}
+$$
+
+$$
+\begin{bmatrix}
+\text{softmax}\left(\frac{((\mathbf{Q}_1\mathbf{W}_1^{(q)}) (\mathbf{K}_1\mathbf{W}_1^{(k)})^\top)}{\sqrt{D}}\right) (\mathbf{V}_1\mathbf{W}_1^{(v)}) \\
+\vdots \\
+\text{softmax}\left(\frac{((\mathbf{Q}_H\mathbf{W}_H^{(q)}) (\mathbf{K}_H\mathbf{W}_H^{(k)})^\top)}{\sqrt{D}}\right) (\mathbf{V}_H\mathbf{W}_H^{(v)})
+\end{bmatrix}\mathbf{W}_o  \in \mathbb{R}^{N \times D}
+$$
+
+## Position-wise Feed-Forward Network
+
+This neural network consists of an input layer, a ReLU activation layer and an output layer. This layer can be represented by:
+
+$$
+\mathcal{N}(\mathbf{X}) = \max(0, \mathbf{X} \mathbf{W}_1)\mathbf{W}_2
+$$
+
+where $$\mathbf{W}_1 \in \mathbb{R}^{D \times B}$$ and $$\mathbf{W}_2 \in \mathbb{R}^{B \times D}$$ are learnable parameters (B is the number of layers for this neural network decided before training). This layer helps the model capture more complex relationships between words.
+
+## Add and Normalise
+
+The add and normalisation layer takes the input and output of the multi-headed attention layer or the position-wise FFN layer and performs the following operation on them:
+
+$$
+\text{LayerNorm}(\mathbf{Y} + \mathbf{X}) \text{, where}
+$$
+
+$$
+\text{LayerNorm}(\mathbf{X}_{ij}) = \left[ \ldots, \frac{\mathbf{X}_{ij} - \hat{\mu}_i}{\hat{\sigma}_i}, \ldots \right]
+$$
+
+$$
+\hat{\mu}_i = \frac{1}{n} \sum_{j=1}^{n} \mathbf{X}_{ij}\\
+\hat{\sigma}_i = \sqrt{\frac{1}{n} \sum_{j=1}^{n} (\mathbf{X}_{ij} - \hat{\mu}_i)^2 + \epsilon}
+$$
+
+With $$\mathbf{Y}$$ and $$\mathbf{X}$$ being the two inputs into the layer, the layer sums them up and normalises them using the mean and standard deviation of the result of the sum. The purpose of this layer is to make sure information is not lost between either the FFN or the attention by adding the unprocessed matrix back to the output matrix. Note: $$\epsilon$$ is a small number to prevent rooting 0 and $$n$$ is the size of $$\mathbf{X}$$.
+
+## Encoder
+
+Referring back to the figure and algorithm for the encoder, we can see that the encoder block consists of one multi-head attention followed by an add and normalize layer, being fed into a position-wise FFN and another add and normalize layer. For any transformer, this encoder block can be "stacked" on top of each other to form multiple encoder blocks, which can help capture more complex relationships.
+
+The encoder takes in the English index representations of the words $$\mathbf{X}^{(\text{enc})}$$ and passes it through the embedding layer and then through the positional encoding layer to obtain the $$N \times D$$ dimensional matrix. Then, the resulting matrix is passed into the encoder block(s) and the output of that is passed into the decoder.
+
+The multi-headed attention takes in three matrices, and in the encoder, the three query, key, value matrices are just $$\mathbf{X}^{(\text{enc})}$$; it is only after these matrices are multiplied by the trainable parameters $$\mathbf{W}$$ do they differ.
+
+$$
+Y_i, X_i = \mathbb{R}^N
+$$
+
+Hyperparameters:
+$$
+N, D, B, H \in \mathbb{N}
+$$
+$$
+\mathbf{M}, \tilde{\mathbf{M}} \in \mathbb{N}^{N\times D}
+$$
+
+Embedding and Positional Encoding:
+$$
+\begin{align*}
+&\text{Embed}_{Fr}(Y_i) + \mathbf{P} \\
+&\text{Embed}_{En}(X_i) + \mathbf{P}
+\end{align*}
+\in \mathbb{R}^{N \times D},
+$$
+$$
+\mathbf{P}_{i,2j} = \sin\left(\frac{i}{10000^{2j/D}}\right)\\
+\mathbf{P}_{i,2j+1} = \cos\left(\frac{i}{10000^{(2j+1)/D}}\right)
+\in \mathbb{R}^{N \times D}
+$$
+
+Query, Key, Value Computation:
+$$
+\mathbf{Q}_i = (\text{Embed}_{En}(X_i) + \mathbf{P})\mathbf{W}^{(q)}\\
+\mathbf{K}_i = (\text{Embed}_{En}(X_i) + \mathbf{P})\mathbf{W}^{(k)}\\
+\mathbf{V}_i = (\text{Embed}_{En}(X_i) + \mathbf{P})\mathbf{W}^{(v)}
+\in \mathbb{R}^{N \times D}\quad \mathbf{W}^{(q)}, \mathbf{W}^{(k)}, \mathbf{W}^{(v)} \in \mathbb{R}^{D \times D}
+$$
+
+Multi-Head Splitting and Attention:
+$$
+\mathbf{Q}_i = \{[\mathbf{Q}_{i1}],[\mathbf{Q}_{i2}],\ldots,[\mathbf{Q}_{iH}]\}, \mathbf{Q}_{iH} \in \mathbb {R}^{N \times D/H}
+$$
+Similarly for $$\mathbf{K}_i$$ and $$\mathbf{V}_i$$.
+
+Attention Masking and Softmax:
+$$
+\mathbf{M}_{ij} = \begin{cases} 1 & \text{if valid\_lens}_i \ge j,\\
+0 & \text{otherwise} \end{cases} \in \mathbb{R}^{N\times N}
+$$
+
+Layer Normalization and Feed-Forward Network:
+$$
+\text{LayerNorm}(\mathbf{X}_{ij}) = \left[\frac{\mathbf{X}_{ij}-\hat{\mu}_i}{\hat{\sigma}_i}\right]
+$$
+
+Final Encoder Output:
+$$
+\text{Encoder}(X_i) = \text{LayerNorm}(\mathbf{Z}_i + \mathcal{N}(\mathbf{Z}_i)) \in \mathbb{R}^{N\times D}
+$$
+
+## Decoder
+
+Decoder transformations and embeddings similarly follow the structure and processing steps as outlined for the encoder, including embeddings, positional encoding, multi-head attention, layer normalization, and the feed-forward network, adjusted for the decoder's context and incorporating the encoder's output.
+
+For each training data pair $$(X_i^{(\text{enc})},X_i^{(\text{dec})})$$ up to $$S$$ training data, the following is performed:
+
+$$
+\hat{\mathbf{Y}} \in \mathbb{R}^{S \times N \times \text{vocab-size}}\\
+\hat{\mathbf{Y}}_i = \text{Decoder}(Y_i, \text{Encoder}(X_i))
+$$
+
+The result is $$S$$ number of $$N\times \text{vocab-size}$$ matrices, as the output of the $$\text{Decoder}$$ is a $$N\times \text{vocab-size}$$ matrix.
+
 
 
 <embed src="/assets/images/Chong.pdf" type="application/pdf" width="100%" height="600px">
